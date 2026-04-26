@@ -6,3 +6,9 @@ venv
 
 node_modules
 
+# Build output
+dist
+.vite
+
+# TypeScript incremental build cache
+*.tsbuildinfo

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { applyTheme, getTheme } from "@/lib/theme";
@@ -26,7 +26,18 @@ const BUTTON_TO_SLUG: Array<{ match: string; slug: string }> = [
  * <html> participates in the height chain.
  */
 export function StateView({ state }: { state: StateDef }) {
-  const sanitized = useMemo(() => sanitizeHtml(state.raw), [state.raw]);
+  const [isHeaderHidden, setIsHeaderHidden] = useState(true);
+  const sanitized = useMemo(() => {
+    let html = sanitizeHtml(state.raw);
+    const globalMenuStr = '<div class="flex flex-row justify-between bg-brand relative z-20" id="global-menu">';
+    if (html.includes(globalMenuStr)) {
+      html = html.replace(
+        globalMenuStr,
+        globalMenuStr + `<button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-background/80 hover:text-accent-foreground h-10 absolute text-brand p-2 m-0 border-none cursor-pointer dark:text-white right-1 top-14 md:top-18" title="${isHeaderHidden ? 'reveal header' : 'hide header'}" aria-label="Toggle secondary header" id="toggle-secondary-header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-right-close" style="transform: ${isHeaderHidden ? 'scaleX(-1)' : 'none'};"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M15 3v18"></path><path d="m8 9 3 3-3 3"></path></svg></button>`
+      );
+    }
+    return html;
+  }, [state.raw, isHeaderHidden]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,6 +69,12 @@ export function StateView({ state }: { state: StateDef }) {
       // Button → look up by aria-label/title
       const button = el.closest("button, [role='button']");
       if (!button) return;
+
+      if (button.id === "toggle-secondary-header-btn") {
+        e.preventDefault();
+        setIsHeaderHidden((prev) => !prev);
+        return;
+      }
       const label = (
         button.getAttribute("aria-label") ||
         button.getAttribute("title") ||
@@ -94,5 +111,5 @@ export function StateView({ state }: { state: StateDef }) {
     return () => document.removeEventListener("click", onClick);
   }, [navigate]);
 
-  return <div className="state-view-wrapper" dangerouslySetInnerHTML={{ __html: sanitized }} />;
+  return <div className={`state-view-wrapper ${isHeaderHidden ? "header-hidden" : ""}`} dangerouslySetInnerHTML={{ __html: sanitized }} />;
 }

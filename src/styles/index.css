@@ -147,3 +147,12 @@
   color: inherit;
 }
 .dark .parity-ghost:hover .dot { background: rgba(228, 228, 231, 0.9); }
+
+/* UI Redesign: Hide secondary header and its reserved spacing */
+.header-hidden .absolute.top-0.right-0.w-full.border-b-2.border-accent.z-10.bg-background.opacity-95.pl-10,
+.header-hidden .absolute.top-0.right-0.w-full.md\:w-full.border-b-2.border-accent.z-10.bg-background.opacity-95.pl-10 {
+  display: none !important;
+}
+.header-hidden .grow.rounded-none.overflow-y-auto.pt-8.md\:pt-14.-mb-10 {
+  padding-top: 0.5rem !important;
+}

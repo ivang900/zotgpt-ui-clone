@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { applyTheme, getTheme } from "@/lib/theme";
@@ -39,11 +39,21 @@ export function StateView({ state }: { state: StateDef }) {
     return html;
   }, [state.raw, isHeaderHidden]);
   const navigate = useNavigate();
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (state.forcedTheme) applyTheme(state.forcedTheme);
     else applyTheme(getTheme());
   }, [state.slug, state.forcedTheme]);
+
+  // Per-state DOM transform — runs before paint so there's no flash.
+  // Re-runs whenever `sanitized` changes, since dangerouslySetInnerHTML
+  // replaces the DOM children and any transform mutations would be lost.
+  useLayoutEffect(() => {
+    if (state.transform && wrapperRef.current) {
+      state.transform(wrapperRef.current);
+    }
+  }, [state.slug, sanitized, state.transform]);
 
   // Intercept clicks inside the captured DOM:
   //  - <a href="/..."> → route via React Router instead of full reload
@@ -111,5 +121,11 @@ export function StateView({ state }: { state: StateDef }) {
     return () => document.removeEventListener("click", onClick);
   }, [navigate]);
 
-  return <div className={`state-view-wrapper ${isHeaderHidden ? "header-hidden" : ""}`} dangerouslySetInnerHTML={{ __html: sanitized }} />;
+  return (
+    <div
+      ref={wrapperRef}
+      className={`state-view-wrapper ${isHeaderHidden ? "header-hidden" : ""}`}
+      dangerouslySetInnerHTML={{ __html: sanitized }}
+    />
+  );
 }

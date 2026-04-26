@@ -17,10 +17,47 @@ export type StateDef = {
   title: string;
   forcedTheme?: "light" | "dark"; // when present, overrides the user's theme for this route
   raw: string;
+  /** Optional DOM transform applied AFTER the captured HTML is injected.
+   *  Use this for redesign-style tweaks layered on top of a capture without
+   *  modifying the source file under research/html/. */
+  transform?: (root: HTMLElement) => void;
+};
+
+/** chat-empty redesign:
+ *  - Drop the original underlined "Start From Prompts" link
+ *  - Repurpose the green emerald "Start New Chat" pill: change its label to
+ *    "Start From Prompts" and turn it into a real link to /start-from-prompts. */
+const chatEmptyTransform = (root: HTMLElement) => {
+  // The two pills sit side-by-side inside this row container.
+  const row = root.querySelector<HTMLElement>(".flex.flex-row.space-x-2.justify-start");
+  if (!row) return;
+
+  const greenPill = row.querySelector<HTMLElement>("div.bg-emerald-100.text-emerald-800");
+  if (greenPill && greenPill.textContent?.trim() === "Start New Chat") {
+    // Replace the div with an anchor so the existing link interceptor in
+    // StateView routes it via React Router. Preserve the visual classes.
+    const link = document.createElement("a");
+    link.className = greenPill.className;
+    link.textContent = "Start From Prompts";
+    link.setAttribute("href", "/start-from-prompts");
+    link.setAttribute("aria-label", "Start From Prompts");
+    greenPill.replaceWith(link);
+  }
+
+  // Remove the original underlined "Start From Prompts" sibling (it becomes
+  // redundant once the green pill carries the same label + behavior).
+  row.querySelectorAll<HTMLElement>("div").forEach((el) => {
+    if (
+      el.textContent?.trim() === "Start From Prompts" &&
+      el.className.includes("underline")
+    ) {
+      el.remove();
+    }
+  });
 };
 
 export const STATES: StateDef[] = [
-  { slug: "chat-empty", title: "Chat — empty", raw: chatEmpty },
+  { slug: "chat-empty", title: "Chat — empty", raw: chatEmpty, transform: chatEmptyTransform },
   { slug: "chat-with-messages", title: "Chat — with messages", raw: chatWithMessages },
   { slug: "chat-with-coding-block", title: "Chat — with code block", raw: chatWithCodingBlock },
   { slug: "reasoning-expanded", title: "Chat — reasoning expanded", raw: reasoningExpanded },

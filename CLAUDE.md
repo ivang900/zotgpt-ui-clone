@@ -91,6 +91,14 @@ The user has approved a **hybrid** next step: keep verbatim HTML/CSS as the pari
 
 Each is a small handler that operates on the captured DOM by selector. Do not introduce JSX components, do not rewrite captured class strings. If a behavior can't be added without touching captured HTML, prefer leaving it static.
 
+### Per-state runtime DOM transforms
+For redesign tweaks (removing/replacing elements, swapping copy, rewiring buttons), do **not** edit the captured HTML files under `research/html/`. Instead, attach a `transform?: (root: HTMLElement) => void` to the relevant `StateDef` in `src/lib/states.ts`. `StateView` runs the transform inside `useLayoutEffect` so the captured DOM is mutated before paint (no flash). The transform re-runs whenever `sanitized` changes, since `dangerouslySetInnerHTML` replaces children. Selectors should be precise (combine multiple class names + a text check) so they don't accidentally match other parts of the captures.
+
+If a transform needs the click to navigate, prefer rewriting the element to an `<a href="/some-slug">` — the existing link interceptor in `StateView` already routes anchors via React Router.
+
+Examples already in place:
+- `chatEmptyTransform` — turns the green emerald "Start New Chat" pill into a "Start From Prompts" link, and removes the original underlined "Start From Prompts" sibling. Demonstrates: tag-replace + textContent change + sibling removal.
+
 ### Recent fixes
 - **Layout chain** (2026-04-26): added `className="contents"` to the `StateView` wrapper. The captured `#app-root` uses `h-full`/`w-full`; without `display: contents` the wrapper broke the height inheritance from `<html>` → `<body>` → `#app-root`, collapsing all content to the top of the viewport.
 - **Inert button navigation** (2026-04-26): added the aria-label/title click map above so most captured buttons feel responsive instead of dead.

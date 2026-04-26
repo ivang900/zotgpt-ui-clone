@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/paritychrome.tsx","./src/components/stateview.tsx","./src/lib/sanitizehtml.ts","./src/lib/states.ts","./src/lib/theme.ts","./src/pages/statesindex.tsx"],"version":"5.9.3"}

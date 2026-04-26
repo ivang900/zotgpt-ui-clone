@@ -1,0 +1,149 @@
+/* Captured stylesheets — imported in the same order as the live site's <head> */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@900&display=swap");
+
+@import "./site/0xli5-1twhxl9.css";
+@import "./site/145o.lsi86g0w.css";
+@import "./site/0631yyj_7lyv4.css";
+@import "./site/16qqpfn.4n7t..css";
+
+/* React mount points must fill the viewport so the captured #app-root,
+ * which uses w-full / h-full, has a sized ancestor chain. Using explicit
+ * width/height here is more reliable than display: contents across browsers. */
+#root,
+.state-view-wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Mimic the Next.js font module class so the captured className resolves */
+.poppins_3333428c-module__tpGzaa__className,
+.font-poppins {
+  font-family: "Poppins", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+.montserrat_a57b1403-module__FCfQva__className,
+.font-montserrat {
+  font-family: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Floating chrome — overlay only, never affects layout. Lives in the
+ * bottom-left corner where no captured state has content. Compact by default,
+ * expands to show labels on hover/focus. */
+.parity-chrome {
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  z-index: 2147483647; /* max signed int32 — beats any captured z-index */
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  font-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  pointer-events: none; /* container ignores pointer; children re-enable */
+}
+.parity-chrome > * { pointer-events: auto; }
+
+.parity-chrome button,
+.parity-chrome a {
+  background: rgba(15, 23, 42, 0.85);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(8px);
+  transition: background-color 120ms ease, transform 120ms ease;
+  line-height: 1;
+}
+
+/* Compact mode: hide the label, show only the icon */
+.parity-chrome .label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 180ms ease, margin-left 180ms ease;
+  margin-left: 0;
+}
+.parity-chrome:hover .label,
+.parity-chrome:focus-within .label {
+  max-width: 80px;
+  margin-left: 4px;
+}
+
+.parity-chrome button:hover,
+.parity-chrome a:hover {
+  background: #1f2937;
+  transform: translateY(-1px);
+}
+.parity-chrome button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Hidden state — a 12px dot in the corner that hints the shortcut on hover.
+ * Discoverable but never visually competes with the captured UI. */
+.parity-ghost {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  z-index: 2147483647;
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  color: rgba(15, 23, 42, 0.55);
+}
+.parity-ghost .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.35);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: background-color 120ms ease, transform 120ms ease;
+}
+.parity-ghost .hint {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 180ms ease;
+  color: rgba(15, 23, 42, 0.7);
+}
+.parity-ghost .hint kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: rgba(15, 23, 42, 0.08);
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+}
+.parity-ghost:hover .hint,
+.parity-ghost:focus-visible .hint {
+  max-width: 160px;
+}
+.parity-ghost:hover .dot {
+  background: rgba(15, 23, 42, 0.7);
+  transform: scale(1.15);
+}
+/* In dark mode invert the ghost so it stays subtle */
+.dark .parity-ghost { color: rgba(228, 228, 231, 0.6); }
+.dark .parity-ghost .dot { background: rgba(228, 228, 231, 0.45); }
+.dark .parity-ghost .hint { color: rgba(228, 228, 231, 0.85); }
+.dark .parity-ghost .hint kbd {
+  background: rgba(228, 228, 231, 0.1);
+  border-color: rgba(228, 228, 231, 0.15);
+  color: inherit;
+}
+.dark .parity-ghost:hover .dot { background: rgba(228, 228, 231, 0.9); }
